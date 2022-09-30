@@ -1,18 +1,13 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h2 class="panel-title" style="display: inline; font-size: 30px;">Contacts</h2>
+    <h2 class="panel-title" style="display: inline; font-size: 30px">
+      Contacts
+    </h2>
     <div class="pull-right">
       <button type="button" class="btn btn-success">New Contact</button>
     </div>
   </div>
   <div class="panel-body">
-    <a href="#" class="list-group-item clearfix" *ngFor="let contact of Contacts">
-      <div class="pull-left">
-          <h3 class="list-group-item-heading">{{ contact.name }}</h3>
-      </div>
-      <span class="pull-right">
-          <img [src]="contact.imageUrl" alt="{{ contact.name }}" class="img-responsive" style="max-height: 50px;">
-      </span>
-    </a>
+    <cms-contact-item *ngFor="let item of Contacts" [contact]="item"></cms-contact-item>
   </div>
 </div>
