@@ -7,9 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'WDD430-cms';
-  loadedFeature = 'contacts';
+  selectedFeature = 'documents';
 
-  onNavigate(feature: string){
-    this.loadedFeature = feature;
+  swithView(feature: string){
+    this.selectedFeature = feature;
   }
 }
