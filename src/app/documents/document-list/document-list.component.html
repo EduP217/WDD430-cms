@@ -1,15 +1,17 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="row pad-left-right">
-      <span class="pull-left title">Add Documents</span>
-      <div class="pull-right">
-        <button type="button" class="btn btn-success">Add Document</button>
-      </div>
+      <span class="pull-left title">Documents</span>
+      <a class="btn btn-success pull-right">Add Document</a>
     </div>
   </div>
   <div class="panel-body">
     <div class="center-panel">
-      <!--Add tag to display a list of DocumentItem components-->
+      <cms-document-item
+        *ngFor="let item of Documents"
+        [document]="item"
+        (documentSelected)="onSelectedDocument(item)"
+      ></cms-document-item>
     </div>
   </div>
 </div>
