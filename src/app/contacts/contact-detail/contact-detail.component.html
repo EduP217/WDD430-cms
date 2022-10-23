@@ -13,20 +13,8 @@
           />
         </div>
         <div class="pull-right">
-          <button
-            type="button"
-            class="btn btn-sm btn-primary"
-            style="margin-left: 5px"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-danger"
-            style="margin-left: 5px"
-          >
-            Delete
-          </button>
+          <a routerLink="edit" routerLinkActive="active" class="btn btn-sm btn-primary" style="margin-left: 5px; cursor: pointer;"> Edit </a>
+          <a (click)="onDelete()" class="btn btn-sm btn-danger" style="margin-left: 5px; cursor: pointer;"> Delete </a>
         </div>
       </div>
     </div>
