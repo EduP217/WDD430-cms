@@ -7,9 +7,4 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'WDD430-cms';
-  selectedFeature = 'documents';
-
-  swithView(feature: string){
-    this.selectedFeature = feature;
-  }
 }
