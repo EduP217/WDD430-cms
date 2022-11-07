@@ -24,6 +24,16 @@
       <b>Email: {{ contact.email }}</b>
       <br />
       <b>Phone: {{ contact.phone }}</b>
+      <br />
+      <b>Contacts in Team:</b>
     </p>
+    <div class="row">
+      <div class="col-xs-12">
+        <cms-contact-item
+          *ngFor="let item of contact.group"
+          [contact]="item"
+        ></cms-contact-item>
+      </div>
+    </div>
   </div>
 </div>
