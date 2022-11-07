@@ -8,9 +8,17 @@
     </div>
   </div>
   <div class="panel-body">
-    <cms-contact-item
-      *ngFor="let item of Contacts"
-      [contact]="item"
-    ></cms-contact-item>
+    <div class="row">
+      <div class="col-xs-12">
+        <cms-contact-item
+          *ngFor="let item of Contacts"
+          [contact]="item"
+          dnd-draggable
+          [dragEnabled]="true"
+          [dragData]="item"
+          [dropZones]="['contactGroup']"
+        ></cms-contact-item>
+      </div>
+    </div>
   </div>
 </div>

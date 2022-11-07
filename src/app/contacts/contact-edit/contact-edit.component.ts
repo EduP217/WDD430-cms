@@ -15,6 +15,7 @@ export class ContactEditComponent implements OnInit {
   groupContacts: Contact[] = [];
   editMode: boolean = false;
   id: string = '';
+  dragFailed = false;
 
   constructor(
     private contactService: ContactService,
@@ -44,11 +45,52 @@ export class ContactEditComponent implements OnInit {
     });
   }
 
-  onSubmit(form: NgForm) {}
-
-  onRemoveItem(idx: number) {}
+  onSubmit(form: NgForm) {
+    let value = form.value;
+    let newContact = new Contact("",value.name, value.email, value.phone, value.imageUrl, this.groupContacts);
+    if (this.editMode) {
+      this.contactService.updateContact(this.originalContact, newContact);
+    } else {
+      this.contactService.addContact(newContact);
+    }
+    this.router.navigateByUrl('/contacts');
+  }
 
   onCancel() {
     this.router.navigateByUrl('/contacts');
+  }
+
+  isInvalidContact(newContact: Contact) {
+    if (!newContact) {
+      // newContact has no value
+      return true;
+    }
+    if (this.contact && newContact.id === this.contact.id) {
+      return true;
+    }
+    for (let i = 0; i < this.groupContacts.length; i++) {
+      if (newContact.id === this.groupContacts[i].id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  addToGroup($event: any) {
+    const selectedContact: Contact = $event.dragData;
+    const invalidGroupContact = this.isInvalidContact(selectedContact);
+    if (invalidGroupContact) {
+      this.dragFailed = true;
+      return;
+    }
+    this.dragFailed=false
+    this.groupContacts.push(selectedContact);
+  }
+
+  onRemoveItem(index: number) {
+    if (index < 0 || index >= this.groupContacts.length) {
+      return;
+    }
+    this.groupContacts.splice(index, 1);
   }
 }
