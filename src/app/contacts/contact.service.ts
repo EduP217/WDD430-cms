@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,33 @@ export class ContactService {
   contactListChangedEvent = new Subject<Contact[]>();
   maxContactId:number = 0;
 
-  constructor() {
-    this.contacts = MOCKCONTACTS;
+  constructor(private http: HttpClient) {
+    this.http
+      .get(
+        'https://epbcms-3d929-default-rtdb.firebaseio.com/contacts.json?auth=prP1EPQU1CCxW54gGQZDMqkmKueeIwlszuZ8tE3H'
+      )
+      .subscribe(
+        (contacts: any) => {
+          this.contacts = contacts;
+          this.maxContactId = this.getMaxId();
+          //sort the list of contacts
+          this.contacts.sort((a, b) => {
+            if (a < b) {
+              return -1;
+            } else if (a > b) {
+              return 1;
+            }
+            return 0;
+          });
+          //emit the next contact list change event
+          this.contactListChangedEvent.next(this.contacts.slice());
+        },
+        // error method
+        (error: any) => {
+          //print the error to the console
+          console.error(error);
+        }
+      );
   }
 
   getContacts(): Contact[] {
@@ -38,7 +64,7 @@ export class ContactService {
       return;
     }
     this.contacts.splice(pos, 1);
-    this.contactListChangedEvent.next(this.contacts.slice());
+    this.storeContacts();
   }
 
   getMaxId(): number {
@@ -60,7 +86,7 @@ export class ContactService {
     this.maxContactId++;
     newContact.id = this.maxContactId.toString();
     this.contacts.push(newContact);
-    this.contactListChangedEvent.next(this.contacts.slice());
+    this.storeContacts();
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
@@ -75,6 +101,20 @@ export class ContactService {
 
     newContact.id = originalContact.id;
     this.contacts[pos] = newContact;
-    this.contactListChangedEvent.next(this.contacts.slice());
+    this.storeContacts();
+  }
+
+  storeContacts() {
+    const contactsToSave = JSON.stringify(this.contacts.slice());
+    let httpHeaders = new HttpHeaders();
+    httpHeaders.set('Content-Type', 'application/json');
+    this.http
+      .put(
+        'https://epbcms-3d929-default-rtdb.firebaseio.com/contacts.json?auth=prP1EPQU1CCxW54gGQZDMqkmKueeIwlszuZ8tE3H',
+        contactsToSave
+      )
+      .subscribe(() =>
+        this.contactListChangedEvent.next(this.contacts.slice())
+      );
   }
 }

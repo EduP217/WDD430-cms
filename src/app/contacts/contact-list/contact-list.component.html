@@ -1,9 +1,16 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <div class="row pad-left-right">
-      <span class="title pull-left">Contacts</span>
-      <div class="pull-right">
-        <a routerLink="new" class="btn btn-success">New Contact</a>
+    <div class="row">
+      <span class="title pad-left-right">Contacts</span>
+    </div>
+    <div class="row">
+      <div class="input-group pull-left pad-left-right col-xs-7">
+        <!-- Add the search box input field here -->
+        <input type="text" id="searchBox" placeholder="Enter a search value" #searchBox (keyup)="search(searchBox.value)" class="form-control"/>
+        <div class="glyphicon glyphicon-search input-group-addon" (click)="search(searchBox.value)"></div>
+      </div>
+      <div class="pull-right pad-left-right">
+        <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
       </div>
     </div>
   </div>
@@ -11,7 +18,7 @@
     <div class="row">
       <div class="col-xs-12">
         <cms-contact-item
-          *ngFor="let item of Contacts"
+          *ngFor="let item of Contacts | contactsFilter:searchBox.value"
           [contact]="item"
           dnd-draggable
           [dragEnabled]="true"

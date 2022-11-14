@@ -70,7 +70,8 @@
               "browserTarget": "WDD430-cms:build:production"
             },
             "development": {
-              "browserTarget": "WDD430-cms:build:development"
+              "browserTarget": "WDD430-cms:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
