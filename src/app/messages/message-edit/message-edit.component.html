@@ -1,6 +1,6 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <form id="document-edit">
+    <form id="message-edit" #f="ngForm" (ngSubmit)="onSendMessage(f)">
       <div class="row">
         <div class="col-sm-12 form-group">
           <label for="subject">Subject</label>
@@ -10,7 +10,10 @@
             class="form-control"
             size="120"
             max="120"
-            #subjectInput
+            name="subject"
+            ngModel
+            #subject="ngModel"
+            required
           />
         </div>
 
@@ -22,7 +25,10 @@
             class="form-control"
             max="255"
             size="120"
-            #msgTextInput
+            name="msgText"
+            ngModel
+            #msgText="ngModel"
+            required
           />
         </div>
       </div>
@@ -31,7 +37,6 @@
           <button
             class="btn btn-success"
             type="submit"
-            (click)="onSendMessage()"
           >
             Send
           </button>

@@ -5,6 +5,19 @@ var http = require('http');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require('mongoose');
+
+// establish a connection to the mongo database
+mongoose.connect('mongodb+srv://mongodb-EP:9vtcplgYl3C0DRih@cluster0.6qx4btz.mongodb.net/cms?retryWrites=true&w=majority',
+   { useNewUrlParser: true }, (err, res) => {
+      if (err) {
+         console.log('Connection failed: ' + err);
+      }
+      else {
+         console.log('Connected to database!');
+      }
+   }
+);
 
 // import the routing file to handle the default (index) route
 var index = require('./server/routes/app');

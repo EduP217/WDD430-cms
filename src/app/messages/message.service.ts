@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Message } from './message.model';
-import { MOCKMESSAGES } from './MOCKMESSAGES';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
@@ -15,7 +14,7 @@ export class MessageService {
   constructor(private http: HttpClient) {
     this.http
       .get(
-        'https://epbcms-3d929-default-rtdb.firebaseio.com/messages.json?auth=prP1EPQU1CCxW54gGQZDMqkmKueeIwlszuZ8tE3H'
+        'http://localhost:3000/messages'
       )
       .subscribe(
         (messages: any) => {
@@ -66,8 +65,25 @@ export class MessageService {
   }
 
   addMessage(message: Message){
-    this.messages.push(message);
-    this.storeMessages();
+    if (!message) {
+      return;
+    }
+
+    message.id = '';
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // add to database
+    this.http
+      .post<{ message: string; data: Message }>(
+        'http://localhost:3000/messages',
+        message,
+        { headers: headers }
+      )
+      .subscribe((responseData) => {
+        // add new document to documents
+        this.messages.push(responseData.data);
+        this.storeMessages();
+      });
   }
 
   storeMessages() {

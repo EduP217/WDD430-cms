@@ -1,4 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Contact } from 'src/app/contacts/contact.model';
+import { ContactService } from 'src/app/contacts/contact.service';
 import { Message } from '../message.model';
 import { MessageService } from '../message.service';
 
@@ -8,31 +12,28 @@ import { MessageService } from '../message.service';
   styleUrls: ['./message-edit.component.css']
 })
 export class MessageEditComponent implements OnInit {
-  @ViewChild('subjectInput') subjectInputRef: ElementRef;
-  @ViewChild('msgTextInput') msgTextInputRef: ElementRef;
+  @ViewChild('f', {static: false}) f!: NgForm;
+  currentSender:Contact = {};
 
-  currentSender:string = "5";
+  constructor(
+    private messageService: MessageService,
+    private router: Router,
+    private contactService: ContactService
+  ) {}
 
-  constructor(subjectInput:ElementRef, msgTextInput:ElementRef, private messageService: MessageService) {
-    this.subjectInputRef = subjectInput;
-    this.msgTextInputRef = msgTextInput;
-  }
+  ngOnInit(): void { }
 
-  ngOnInit(): void {
-  }
-
-  onSendMessage(){
-    const subject = this.subjectInputRef.nativeElement.value;
-    const msgText = this.msgTextInputRef.nativeElement.value;
-    const newMessage = new Message("1",subject,msgText,this.currentSender);
+  onSendMessage(form: NgForm){
+    this.currentSender = this.contactService.getContact("5");
+    let value = form.value;
+    const newMessage = new Message("",value.subject,value.msgText,this.currentSender);
     this.messageService.addMessage(newMessage);
     this.onClear();
+    this.router.navigateByUrl('/messages');
   }
 
   onClear(){
-    this.subjectInputRef.nativeElement.value = "";
-    this.msgTextInputRef.nativeElement.value = "";
-    this.subjectInputRef.nativeElement.focus();
+    this.f.resetForm();
   }
 
 }

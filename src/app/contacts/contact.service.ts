@@ -15,11 +15,11 @@ export class ContactService {
   constructor(private http: HttpClient) {
     this.http
       .get(
-        'https://epbcms-3d929-default-rtdb.firebaseio.com/contacts.json?auth=prP1EPQU1CCxW54gGQZDMqkmKueeIwlszuZ8tE3H'
+        'http://localhost:3000/contacts'
       )
       .subscribe(
-        (contacts: any) => {
-          this.contacts = contacts;
+        (data: any) => {
+          this.contacts = data.contacts;
           this.maxContactId = this.getMaxId();
           //sort the list of contacts
           this.contacts.sort((a, b) => {
@@ -47,10 +47,11 @@ export class ContactService {
 
   getContact(id: string = ""): Contact {
     let contact:Contact = {};
-    this.getContacts().forEach((c) => {
-      if (c.id == id) {
+    this.getContacts().map((c) => {
+      if (c.id === id) {
         contact = c;
       }
+      return c;
     });
     return contact;
   }
@@ -59,12 +60,18 @@ export class ContactService {
     if (!contact) {
       return;
     }
-    const pos = this.contacts.indexOf(contact);
+    const pos = this.contacts.findIndex(c => c.id === contact.id);
     if (pos < 0) {
       return;
     }
-    this.contacts.splice(pos, 1);
-    this.storeContacts();
+
+    this.http.delete('http://localhost:3000/contacts/' + contact.id)
+      .subscribe(
+        (response) => {
+          this.contacts.splice(pos, 1);
+          this.storeContacts();
+        }
+      );
   }
 
   getMaxId(): number {
@@ -78,30 +85,54 @@ export class ContactService {
     return maxId
   }
 
-  addContact(newContact: Contact) {
-    if(newContact === undefined || null){
+  addContact(contact: Contact) {
+    if (!contact) {
       return;
     }
 
-    this.maxContactId++;
-    newContact.id = this.maxContactId.toString();
-    this.contacts.push(newContact);
-    this.storeContacts();
+    console.log(contact);
+
+    contact.id = '';
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    // add to database
+    this.http
+      .post<{ message: string; contact: Contact }>(
+        'http://localhost:3000/contacts',
+        contact,
+        { headers: headers }
+      )
+      .subscribe((responseData) => {
+        // add new contact to contacts
+        this.contacts.push(responseData.contact);
+        this.storeContacts();
+      });
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
-    if((originalContact === undefined || null) || (newContact === undefined || null)){
+    if(!originalContact || !newContact){
       return;
     }
 
-    let pos = this.contacts.indexOf(originalContact)
+    const pos = this.contacts.findIndex(c => c.id === originalContact.id)
     if(pos < 0){
       return
     }
 
     newContact.id = originalContact.id;
-    this.contacts[pos] = newContact;
-    this.storeContacts();
+    newContact._id = originalContact._id;
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // update database
+    this.http.put('http://localhost:3000/contacts/' + originalContact.id,
+    newContact, { headers: headers })
+      .subscribe(
+        (response) => {
+          this.contacts[pos] = newContact;
+          this.storeContacts();
+        }
+      );
   }
 
   storeContacts() {
